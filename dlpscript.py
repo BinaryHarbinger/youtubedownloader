@@ -5,9 +5,15 @@ import subprocess
 
 
 video_URL= ""
+if os.name == "nt": homepath = os.path.expanduser(os.getenv('USERPROFILE'))
 
 def download_file(video_url, output_dir_s="~/Music",output_dir_v="~/Videos", archive_file_s="~/.yt-dlp-archive_s",archive_file_v="~/.yt-dlp-archive_v",file_format="sound"):
-    
+    global homepath
+
+    if os.name == "nt":
+        archive_file_s = homepath+"\Music"
+        archive_file_v = homepath+"\Videos"
+
     # Çıkış klasörünü genişlet
     archive_file_v = os.path.expanduser(archive_file_v)
     archive_file_s = os.path.expanduser(archive_file_s)

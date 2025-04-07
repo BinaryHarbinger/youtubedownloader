@@ -1,1 +1,0 @@
-python /home/efe/Documents/youtubem4a/main.py

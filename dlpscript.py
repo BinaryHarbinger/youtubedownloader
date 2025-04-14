@@ -7,7 +7,7 @@ import subprocess
 video_URL= ""
 if os.name == "nt": homepath = os.path.expanduser(os.getenv('USERPROFILE'))
 
-def download_file(video_url, output_dir_s="~/Music",output_dir_v="~/Videos", archive_file_s="~/.yt-dlp-archive_s",archive_file_v="~/.yt-dlp-archive_v",file_format="sound"):
+def download_file(video_url, output_dir_s="~/Music",output_dir_v="~/Videos", archive_file_s="~/.yt-dlp-archive_s",archive_file_v="~/.yt-dlp-archive_v",file_format="sound", redownload_file=False):
     global homepath
 
     if os.name == "nt":
@@ -25,20 +25,35 @@ def download_file(video_url, output_dir_s="~/Music",output_dir_v="~/Videos", arc
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        command = [
-            "yt-dlp",
-            "-x",  # Sadece sesi indir
-            "--audio-format", "m4a",  # Formatı m4a yap
-            "--embed-metadata",  # Metadata dosyaya göm
-            "--embed-thumbnail",  # Kapak fotoğrafını göm
-            "--add-metadata",  # Ek metadata ekle
-            "--yes-playlist",  # Playlist için destek
-            "--download-archive", archive_file_s,  # Daha önce indirilenleri kaydet
-            "--no-post-overwrites",  # Eğer dosya varsa yeniden işlem yapma
-            "-o", f"{output_dir_s}/%(playlist)s/%(title)s.%(ext)s",  # Playlist adıyla klasör oluştur
-            "-f", "bestaudio",  # En yüksek kaliteli ses formatını seç
-            video_url
-        ]
+        if redownload_file == False: 
+            command = [
+                "yt-dlp",
+                "-x",  # Sadece sesi indir
+                "--audio-format", "m4a",  # Formatı m4a yap
+                "--embed-metadata",  # Metadata dosyaya göm
+                "--embed-thumbnail",  # Kapak fotoğrafını göm
+                "--add-metadata",  # Ek metadata ekle
+                "--yes-playlist",  # Playlist için destek
+                "--download-archive", archive_file_s,  # Daha önce indirilenleri kaydet
+                "--no-post-overwrites",  # Eğer dosya varsa yeniden işlem yapma
+                "-o", f"{output_dir_s}/%(playlist)s/%(title)s.%(ext)s",  # Playlist adıyla klasör oluştur
+                "-f", "bestaudio",  # En yüksek kaliteli ses formatını seç
+                video_url
+            ]
+        else:
+            command = [
+                "yt-dlp",
+                "-x",  # Sadece sesi indir
+                "--audio-format", "m4a",  # Formatı m4a yap
+                "--embed-metadata",  # Metadata dosyaya göm
+                "--embed-thumbnail",  # Kapak fotoğrafını göm
+                "--add-metadata",  # Ek metadata ekle
+                "--yes-playlist",  # Playlist için destek
+                "--no-post-overwrites",  # Eğer dosya varsa yeniden işlem yapma
+                "-o", f"{output_dir_s}/%(playlist)s/%(title)s.%(ext)s",  # Playlist adıyla klasör oluştur
+                "-f", "bestaudio",  # En yüksek kaliteli ses formatını seç
+                video_url
+            ]
     elif file_format == "Video":
 
         output_dir = os.path.expanduser(output_dir_v)
@@ -46,20 +61,31 @@ def download_file(video_url, output_dir_s="~/Music",output_dir_v="~/Videos", arc
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-
-        command = [
-                    "yt-dlp",
-                    "--embed-metadata",  # Metadata dosyaya göm
-                    "--embed-thumbnail",  # Kapak fotoğrafını göm
-                    "--add-metadata",  # Ek metadata ekle
-                    "--yes-playlist",  # Playlist için destek
-                    "--download-archive", archive_file_v,  # Daha önce indirilenleri kaydet
-                    "--no-post-overwrites",  # Eğer dosya varsa yeniden işlem yapma
-                    "-o", f"{output_dir}/%(playlist)s/%(title)s.%(ext)s",  # Playlist adıyla klasör oluştur
-                    "-f", "bestvideo+bestaudio",  # En yüksek video ve ses formatlarını seç
-                    video_url
-                ]
-
+        if redownload_file == False:
+            command = [
+                        "yt-dlp",
+                        "--embed-metadata",  # Metadata dosyaya göm
+                        "--embed-thumbnail",  # Kapak fotoğrafını göm
+                        "--add-metadata",  # Ek metadata ekle
+                        "--yes-playlist",  # Playlist için destek
+                        "--no-post-overwrites",  # Eğer dosya varsa yeniden işlem yapma
+                        "-o", f"{output_dir}/%(playlist)s/%(title)s.%(ext)s",  # Playlist adıyla klasör oluştur
+                        "-f", "bestvideo+bestaudio",  # En yüksek video ve ses formatlarını seç
+                        video_url
+                    ]
+        else:
+            command = [
+                        "yt-dlp",
+                        "--embed-metadata",  # Metadata dosyaya göm
+                        "--embed-thumbnail",  # Kapak fotoğrafını göm
+                        "--add-metadata",  # Ek metadata ekle
+                        "--yes-playlist",  # Playlist için destek
+                        "--download-archive", archive_file_v,  # Daha önce indirilenleri kaydet
+                        "--no-post-overwrites",  # Eğer dosya varsa yeniden işlem yapma
+                        "-o", f"{output_dir}/%(playlist)s/%(title)s.%(ext)s",  # Playlist adıyla klasör oluştur
+                        "-f", "bestvideo+bestaudio",  # En yüksek video ve ses formatlarını seç
+                        video_url
+                    ]
 
 
     # Run download command

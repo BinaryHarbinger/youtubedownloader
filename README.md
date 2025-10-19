@@ -7,6 +7,7 @@ YouTube video and audio downloader. (based on python)
 
 Requirements: `pyqt6, yt-dlp, python3`
 
-![image](https://github.com/user-attachments/assets/e6e741e9-f978-4685-954d-eca9552e824f)
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ab38def3-31f4-4769-b507-38e401bd3323" />
+
 
 

@@ -29,38 +29,24 @@ def download_file(video_url: str,
     if not redownload_file:
         if not os.path.exists(archive_file_s):
             open(archive_file_s, 'a').close()
+    
+    # Make file_format lowercase
+    file_format = file_format.lower()
 
-    if file_format.lower() == "sound":
-        # Download thumbnail using PPA
-        thumb_cmd = [
-            "yt-dlp",
-            "--ppa",
-            "--write-thumbnail",
-            "--convert-thumbnails", "jpg",
-            "--skip-download",
-            "-o", os.path.join(output_dir, "%(playlist)s", "%(title)s.%(ext)s"),
-            video_url
-        ]
-        subprocess.run(thumb_cmd, check=True)
-
-        # Crop thumbnail to square
-        for root, _, files in os.walk(output_dir):
-            for f in files:
-                if f.endswith(".jpg"):
-                    full_path = os.path.join(root, f)
-                    tmp_path = os.path.join(root, "_"+f)
-                    subprocess.run([
-                        "ffmpeg", "-y", "-i", full_path,
-                        "-vf", "crop='if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'",
-                        tmp_path
-                    ], check=True)
-                    os.replace(tmp_path, full_path)
+    if  any(file_format == type_str for type_str in ["music", "sound"]):
+        # Declare file file_extention
+        if "m4a" in file_format:
+            file_extention = "m4a"
+        elif "opus" in file_format: 
+            file_extention = "opus"
+        else:
+            file_extention = "m4a"
 
         # Download audio and embed metadata & thumbnail
         audio_cmd = [
             "yt-dlp",
             "-x",
-            "--audio-format", "opus",
+            "--audio-format", file_extention,
             "-f", "bestaudio",
             "--embed-thumbnail",
             "--embed-metadata",

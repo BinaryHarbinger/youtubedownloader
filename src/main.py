@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
 
         self.format_combo = QComboBox()
         self.format_combo.setFixedWidth(150)
-        self.format_combo.addItems(["Video", "Sound"])
+        self.format_combo.addItems(["Video", "Music (m4a)", "Sound (Opus)"])
         format_layout.addWidget(self.format_combo)
 
         format_layout.addStretch(1)

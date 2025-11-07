@@ -4,7 +4,7 @@
 
 A Python-based application for downloading YouTube videos and audio, built with **PyQt6** and **yt-dlp**. Designed for simplicity and speed, with a focus on cross-platform functionality.  
 
-> ⚠️ yt-dlp must be installed system wide in order to run program!
+> ⚠️ yt-dlp and ffmpeg must be installed system wide in order to run program!
 
 ## Features
 

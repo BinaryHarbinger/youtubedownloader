@@ -1,87 +1,75 @@
-
-import os
 import subprocess
+from pathlib import Path
 from typing import Optional
 
-def download_file(video_url: str, 
-                  custom_output_dir: Optional[str] = None,
-                  output_dir_s: str = "~/Music",
-                  archive_file_s: str = "archive_sound.txt",
-                  file_format: str = "sound",
-                  redownload_file: bool = False) -> None:
-    """
-    Download audio or video from YouTube with 1:1 cropped cover embedded.
-    Handles playlists or single videos (NA folder for singles).
-    """
+def download_file(
+    video_url: str,
+    custom_output_dir: Optional[str] = None,
+    archive_file_s: str = "archive_sound.txt",
+    file_format: str = "sound",
+    redownload_file: bool = False
+) -> None:
+    """Download audio or video from YouTube with embedded metadata and thumbnail."""
 
-    # Expand paths
-    output_dir_s = os.path.expanduser(output_dir_s)
-    if custom_output_dir:
-        output_dir = os.path.expanduser(custom_output_dir)
-    else:
-        output_dir = output_dir_s
-
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Archive file path
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    rchive_file_s = os.path.join(current_dir, archive_file_s)
-    if not redownload_file:
-        if not os.path.exists(archive_file_s):
-            open(archive_file_s, 'a').close()
-    
-    # Make file_format lowercase
     file_format = file_format.lower()
 
-    if  "music" in file_format or "sound" in file_format:
-        # Declare file file_extention
-        if "m4a" in file_format:
-            file_extention = "m4a"
-        elif "opus" in file_format: 
-            file_extention = "opus"
-        else:
-            file_extention = "m4a"
+    # Choose default output folder based on file type
+    home = Path.home()
+    if "music" in file_format or "sound" in file_format:
+        default_dir = home / "Music"
+    else:
+        default_dir = home / "Videos"
 
-        # Download audio and embed metadata & thumbnail
-        audio_cmd = [
-            "yt-dlp",
-            "-x",
-            "--audio-format", file_extention,
+    # Use custom directory if provided
+    output_dir = Path(custom_output_dir).expanduser() if custom_output_dir else default_dir
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Archive file setup
+    archive_file = Path(__file__).resolve().parent / archive_file_s
+    if not redownload_file and not archive_file.exists():
+        archive_file.touch()
+
+    # Determine file extension
+    if "m4a" in file_format:
+        file_ext = "m4a"
+    elif "opus" in file_format:
+        file_ext = "opus"
+    else:
+        file_ext = "m4a"
+
+    # Output file pattern for yt-dlp
+    output_pattern = str(output_dir / "%(playlist)s" / "%(title)s.%(ext)s")
+
+    # yt-dlp command setup
+    if "music" in file_format or "sound" in file_format:
+        cmd = [
+            "yt-dlp", "-x",
+            "--audio-format", file_ext,
             "-f", "bestaudio",
-            "--embed-thumbnail",
-            "--embed-metadata",
-            "--add-metadata",
-            "--yes-playlist",
-            "--no-post-overwrites",
-            "-o", os.path.join(output_dir, "%(playlist)s", "%(title)s.%(ext)s"),
+            "--embed-thumbnail", "--embed-metadata", "--add-metadata",
+            "--yes-playlist", "--no-post-overwrites",
+            "-o", output_pattern,
             video_url
         ]
-        if not redownload_file:
-            audio_cmd.extend(["--download-archive", archive_file_s])
-
-        subprocess.run(audio_cmd, check=True)
-        print(f"Audio download completed: {video_url}")
-
     else:
-        # Video download with thumbnail and metadata embed
-        video_cmd = [
+        cmd = [
             "yt-dlp",
             "-f", "bestvideo+bestaudio",
-            "--embed-thumbnail",
-            "--embed-metadata",
-            "--add-metadata",
-            "--yes-playlist",
-            "--no-post-overwrites",
-            "-o", os.path.join(output_dir, "%(playlist)s", "%(title)s.%(ext)s"),
+            "--embed-thumbnail", "--embed-metadata", "--add-metadata",
+            "--yes-playlist", "--no-post-overwrites",
+            "-o", output_pattern,
             video_url
         ]
-        if not redownload_file:
-            video_cmd.extend(["--download-archive", archive_file_s])
-        
-        subprocess.run(video_cmd, check=True)
-        print(f"Video download completed: {video_url}")
+
+    # Add archive option if redownload is not requested
+    if not redownload_file:
+        cmd.extend(["--download-archive", str(archive_file)])
+
+    subprocess.run(cmd, check=True)
+    print(f"Download completed: {video_url}")
+    print(f"Saved to: {output_dir.resolve()}")
 
 
 if __name__ == "__main__":
-    download_file(video_URL)
+    download_file("https://www.youtube.com/watch?v=dQw4w9WgXcQ", file_format="video")
 

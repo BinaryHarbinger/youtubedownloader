@@ -25,7 +25,7 @@ def download_file(video_url: str,
 
     # Archive file path
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    archive_file_s = os.path.join(current_dir, archive_file_s)
+    rchive_file_s = os.path.join(current_dir, archive_file_s)
     if not redownload_file:
         if not os.path.exists(archive_file_s):
             open(archive_file_s, 'a').close()
@@ -33,7 +33,7 @@ def download_file(video_url: str,
     # Make file_format lowercase
     file_format = file_format.lower()
 
-    if  any(file_format == type_str for type_str in ["music", "sound"]):
+    if  "music" in file_format or "sound" in file_format:
         # Declare file file_extention
         if "m4a" in file_format:
             file_extention = "m4a"
